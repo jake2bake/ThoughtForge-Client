@@ -1,0 +1,7 @@
+@import 'bulma/css/bulma.css';
+
+/* Your custom styles below */
+body {
+  background-color: #fdfdfd;
+  font-family: 'system-ui', sans-serif;
+}
