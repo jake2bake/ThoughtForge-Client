@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <nav className="navbar" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
-        <Link href="/" className="navbar-item" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+        <Link href="/entries" className="navbar-item" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
           ⚔️ ThoughtForge
         </Link>
       </div>

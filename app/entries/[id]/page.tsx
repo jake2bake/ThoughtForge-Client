@@ -1,8 +1,9 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getEntryById } from "@/app/data/entries";
+import { getEntryById, deleteEntry } from "@/app/data/entries";
+;
 
 interface Topic {
   id: number;
@@ -25,11 +26,12 @@ interface Entry {
 }
 
 // Medieval Scroll Component integrated into your page
-function MedievalScroll({ entry }: { entry: Entry }) {
+function MedievalScroll({ entry, onEdit, onDelete }: { entry: Entry; onEdit: () => void; onDelete: () => void }) {
   const [isUnfurling, setIsUnfurling] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [typewriterText, setTypewriterText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // Format the date in medieval style
   const formatMedievalDate = (dateString: string) => {
@@ -55,6 +57,19 @@ function MedievalScroll({ entry }: { entry: Entry }) {
     return `The ${day}${getDayOrdinal(day)} day of ${month}, in the year of our code ${year}`;
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteConfirm(false)
+    onDelete()
+  }
+
+  const handleDeleteCancel = () => {
+  setShowDeleteConfirm(false);
+};
+
   // Unfurling animation sequence
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -77,9 +92,65 @@ function MedievalScroll({ entry }: { entry: Entry }) {
     }
   }, [showContent, currentIndex, entry.reflection]);
 
+  
+
   return (
     <>
       <div className="scroll-container">
+        {/* Action Buttons */}
+<div className="medieval-actions">
+  <button 
+    onClick={onEdit}
+    className="medieval-btn medieval-btn-edit"
+    title="Edit this scroll"
+  >
+    <span className="btn-icon">✍️</span>
+    <span className="btn-text">Amend</span>
+  </button>
+  <button 
+    onClick={handleDeleteClick}
+    className="medieval-btn medieval-btn-delete"
+    title="Destroy this scroll"
+  >
+    <span className="btn-icon">🔥</span>
+    <span className="btn-text">Burn</span>
+  </button>
+</div>
+
+{/* Delete Confirmation Modal */}
+{showDeleteConfirm && (
+  <div className="modal-overlay">
+    <div className="delete-confirmation">
+      <div className="confirmation-header">
+        <span className="warning-icon">⚠️</span>
+        <h3>By Royal Decree</h3>
+      </div>
+      <div className="confirmation-content">
+        <p>Art thou certain thou wishest to consign this sacred scroll to the flames? 
+        This action cannot be undone, and the wisdom contained within shall be lost forever.</p>
+        <div className="scroll-preview">
+          <strong>"{entry.title}"</strong>
+        </div>
+      </div>
+      <div className="confirmation-actions">
+        <button 
+          onClick={handleDeleteCancel}
+          className="medieval-btn medieval-btn-cancel"
+        >
+          <span className="btn-icon">🛡️</span>
+          <span className="btn-text">Preserve</span>
+        </button>
+        <button 
+          onClick={handleDeleteConfirm}
+          className="medieval-btn medieval-btn-confirm-delete"
+        >
+          <span className="btn-icon">🔥</span>
+          <span className="btn-text">Burn It</span>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         {/* Wax Seal */}
         <div className="wax-seal">
           <div className="seal-inner">
@@ -185,6 +256,81 @@ function MedievalScroll({ entry }: { entry: Entry }) {
       </div>
 
       <style jsx>{`
+        .medieval-actions {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 15;
+}
+
+.medieval-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 3px solid #8b7355;
+  border-radius: 25px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.medieval-btn-edit {
+  background: linear-gradient(135deg, #d4a574 0%, #b8956a 100%);
+  color: #2c2c3e;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.medieval-btn-delete {
+  background: linear-gradient(135deg, #8b0000 0%, #660000 100%);
+  color: #f4e8d0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.medieval-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirmation {
+  background: linear-gradient(135deg, #f4e8d0 0%, #ede0c8 100%);
+  border: 4px solid #8b7355;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
         .scroll-container {
           position: relative;
           max-width: 800px;
@@ -596,6 +742,7 @@ function MedievalScroll({ entry }: { entry: Entry }) {
 
 export default function EntryDetailPage() {
   const { id } = useParams();
+  const router = useRouter()
   const [entry, setEntry] = useState<Entry | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -613,6 +760,19 @@ export default function EntryDetailPage() {
       fetchEntry();
     }
   }, [id]);
+
+   const handleEdit = () => {
+    router.push(`/entries/${id}/edit`);
+  };
+
+   const handleDelete = async () => {
+    try {
+      await deleteEntry(id);
+      router.push('/entries');
+    } catch (err: any) {
+      setError(err.message || "Failed to delete entry");
+    }
+  };
 
   if (error) {
     return (
@@ -634,5 +794,5 @@ export default function EntryDetailPage() {
     );
   }
 
-  return <MedievalScroll entry={entry} />;
+  return <MedievalScroll entry={entry} onEdit={handleEdit} onDelete={handleDelete} />;
 }
