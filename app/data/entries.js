@@ -75,3 +75,14 @@ export function getLikedEntries() {
     },
   })
 }
+
+export function deleteEntry(id, entry) {
+  return fetchWithoutResponse(`entries/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(entry)
+  })
+}
