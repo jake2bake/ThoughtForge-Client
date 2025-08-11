@@ -1,4 +1,4 @@
-import {fetchWithResponse, fetchwWithoutResponse} from './fetcher'
+import {fetchWithResponse, fetchWithoutResponse} from './fetcher'
 
 export function getEntries() {
     let url = 'entries'

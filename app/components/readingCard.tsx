@@ -11,6 +11,7 @@ interface Reading {
   title: string;
   author: string;
   topic: Topic | null;
+  gutenberg_id: number
 }
 
 interface ReadingCardProps {
@@ -21,7 +22,7 @@ export const ReadingCard: React.FC<ReadingCardProps> = ({ reading }) => {
   return (
     <div className="column is-half">
       <div className="box">
-        <Link href={`/readings/${reading.id}`}>
+        <Link href={`/readings/${reading.gutenberg_id}`}>
           <h2 className="title is-5 has-text-link is-clickable">{reading.title}</h2>
         </Link>
 
