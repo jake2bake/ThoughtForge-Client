@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { getGutendex } from "@/app/data/readings"; // adjust the path as needed
 
 interface Reading {
   id: number;
@@ -20,11 +21,9 @@ export default function ReadingDetailPage() {
   useEffect(() => {
     const fetchReading = async () => {
       try {
-        const res = await fetch(`https://gutendex.com/books/${id}`);
-        const data = await res.json();
+        const data = await getGutendex(Number(id));
         setReading(data);
 
-        // Try to get the plain text URL
         const formats = data.formats || {};
         const textUrl =
           formats["text/plain; charset=utf-8"] ||
@@ -60,7 +59,6 @@ export default function ReadingDetailPage() {
   return (
     <div className="bg-amber-50 min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Medieval manuscript header */}
         <div className="bg-amber-900 text-amber-100 p-6 border-4 border-amber-800 shadow-lg mb-6">
           <h1 className="text-3xl font-bold font-mono mb-2 text-center border-b-2 border-amber-700 pb-2">
             {reading.title}
@@ -70,25 +68,23 @@ export default function ReadingDetailPage() {
           </h2>
         </div>
 
-        {/* Manuscript details */}
         <div className="bg-amber-100 border-4 border-amber-800 p-4 mb-6 shadow-lg">
           <div className="mb-4">
             <span className="font-bold font-mono text-amber-900">📜 Subjects:</span>
             <span className="font-mono text-amber-800 ml-2">{reading.subjects.join(", ")}</span>
           </div>
-          
+
           <div className="mb-4">
             <span className="font-bold font-mono text-amber-900">🏰 Bookshelves:</span>
             <span className="font-mono text-amber-800 ml-2">{reading.bookshelves.join(", ")}</span>
           </div>
         </div>
 
-        {/* Scroll container */}
         <div className="bg-amber-100 border-4 border-amber-800 shadow-lg">
           <div className="bg-amber-900 text-amber-100 p-2 border-b-2 border-amber-800">
             <h3 className="font-mono font-bold text-center">📖 Ancient Manuscript 📖</h3>
           </div>
-          
+
           <div
             className="bg-amber-50 p-4 border-2 border-amber-700 m-2"
             style={{
@@ -98,7 +94,7 @@ export default function ReadingDetailPage() {
               fontFamily: "monospace",
               fontSize: "0.9rem",
               lineHeight: 1.6,
-              color: "#451a03", // amber-900
+              color: "#451a03",
             }}
           >
             {textContent}

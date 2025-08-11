@@ -9,3 +9,12 @@ export function getReadings() {
         }
     })
 }
+
+export function getGutendex(id) {
+  return fetchWithResponse(`gutendex/books/${id}`, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
+

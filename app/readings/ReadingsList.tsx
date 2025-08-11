@@ -14,6 +14,7 @@ interface Reading {
   title: string;
   author: string;
   topic: Topic | null;
+  gutenberg_id: number
 }
 
 export default function ReadingsList() {
@@ -40,7 +41,7 @@ export default function ReadingsList() {
     fetchReadings();
   }, []);
 
-  // Fetch Gutendex results based on search term
+  // Fetch Gutendex results via proxy
   useEffect(() => {
     if (!searchTerm.trim()) {
       setGutendexBooks([]);
@@ -52,8 +53,11 @@ export default function ReadingsList() {
       setLoadingGutendex(true);
       try {
         const res = await fetch(
-          `https://gutendex.com/books?search=${encodeURIComponent(searchTerm)}`
+          `/gutendex/search/?q=${encodeURIComponent(searchTerm)}`
         );
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
         const data = await res.json();
 
         const mappedBooks = data.results.map((book: any) => ({
