@@ -2,11 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { getTopics } from "@/app/data/topics";
+import {getTags, getEntryTags} from "@/app/data/tags"
 
 interface Topic {
   id: number;
   label: string;
 }
+
+interface Tag {
+  id: number;
+  name: string
+
+}
+
 
 interface EntryFormProps {
   initialData?: {
@@ -14,12 +22,14 @@ interface EntryFormProps {
     reflection: string;
     isPrivate: boolean;
     topicId: number;
+    tagIds?: number[]
   };
   onSubmit: (data: {
     title: string;
     reflection: string;
     isPrivate: boolean;
     topic: number;
+    tag_ids: number[]
   }) => Promise<void>;
   submitLabel?: string;
 }
@@ -35,6 +45,15 @@ export default function EntryForm({
   const [topicId, setTopicId] = useState<number | null>(initialData?.topicId || null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [tags, setTags] = useState<Tag[]>([])
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(initialData?.tagIds || [])
+
+  useEffect(() => {
+    getTags()
+    .then((data) => setTags(data))
+    .catch(() => setError("Failed to load tags"))
+  }, [])
+
 
   useEffect(() => {
     getTopics()
@@ -56,6 +75,7 @@ export default function EntryForm({
         reflection,
         isPrivate,
         topic: topicId,
+        tag_ids: selectedTagIds
       });
     } catch (err) {
       console.error(err);
@@ -111,6 +131,27 @@ export default function EntryForm({
               </select>
             </div>
           </div>
+          
+          <div className="field">
+  <label className="label">Tags</label>
+  {tags.map(tag => (
+    <label key={tag.id} className="checkbox" style={{ marginRight: '1em' }}>
+      <input
+        type="checkbox"
+        checked={selectedTagIds.includes(tag.id)}
+        onChange={() => {
+          if (selectedTagIds.includes(tag.id)) {
+            setSelectedTagIds(selectedTagIds.filter(id => id !== tag.id));
+          } else {
+            setSelectedTagIds([...selectedTagIds, tag.id]);
+          }
+        }}
+      />{' '}
+      {tag.name}
+    </label>
+  ))}
+</div>
+
 
           {/* Private */}
           <div className="field">

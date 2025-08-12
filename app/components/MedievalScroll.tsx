@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
 
+interface Tag {
+  id: number;
+  name: string
+}
+
 interface Topic {
   id: number;
   label: string;
@@ -18,6 +23,7 @@ interface Entry {
   created_at: string;
   topic: Topic | null;
   user: User | null;
+  tags: Tag
 }
 
 // Updated component props to include currentUser
@@ -213,6 +219,18 @@ export default function MedievalScroll({
                     <span className="meta-text">Subject of contemplation: {entry.topic.label}</span>
                   </div>
                 )}
+                <div className="tags mt-4">
+                  {entry.tags && entry.tags.length > 0 ? (
+                    entry.tags.map(tag => (
+                      <span key={tag.id} className="tag is-info is-light" style={{ marginRight: '0.5em' }}>
+                        {tag.name}
+                      </span>
+                    ))
+                  ) : (
+                    <small className="has-text-grey-light">No tags</small>
+                  )}
+                </div>
+
                 <div className="meta-item">
                   <span className="meta-icon">{entry.isPrivate ? '🔒' : '🌍'}</span>
                   <span className="meta-text">

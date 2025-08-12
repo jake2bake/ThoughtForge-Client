@@ -31,9 +31,9 @@ export default function ReadingDetailPage() {
           formats["text/plain"];
 
         if (textUrl) {
-          const textRes = await fetch(textUrl);
-          const bookText = await textRes.text();
-          setTextContent(bookText);
+          // const textRes = await fetch(textUrl);
+          // const bookText = await textRes.text();
+          // setTextContent(bookText);
         } else {
           setTextContent("No plain text version available.");
         }
