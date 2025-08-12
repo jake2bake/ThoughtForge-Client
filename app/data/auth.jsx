@@ -12,7 +12,7 @@ export function login({ username, password }) {
 
 
 export function register(user) {
-  return fetchWithResponse("register", {
+  return fetchWithResponse("register/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
