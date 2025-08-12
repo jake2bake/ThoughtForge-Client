@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "../data/auth";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -76,6 +77,14 @@ export default function LoginPage() {
                   🏰 Enter the Keep
                 </button>
               </div>
+            </div>
+            <div className="field">
+              <div className="control">
+                <Link href='/register' className="button is-primary" style={{ width: '100%'}}>
+                  Be Knighted, Dear Traveler
+                </Link>
+              </div>
+
             </div>
           </form>
         </div>

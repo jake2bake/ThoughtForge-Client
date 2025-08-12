@@ -1,6 +1,11 @@
 import React from "react";
 import Link from "next/link";
 
+interface Tag {
+  id: number;
+  name: string
+}
+
 interface Topic {
   id: number;
   label: string;
@@ -19,6 +24,7 @@ interface Entry {
   created_at: string;
   topic: Topic | null;
   user: User | null;
+  tags: Tag
 }
 
 interface EntryCardProps {
@@ -47,6 +53,16 @@ export const EntryCard: React.FC<EntryCardProps> = ({ entry, onLike, onShare }) 
         </p>
 
         <p className="mt-2">{entry.reflection}</p>
+
+        <div className="tags mt-2">
+          {entry.tags && entry.tags.length > 0 ? (
+            entry.tags.map(tag => (
+              <span key={tag.id} className="tag is-info is-light" style={{marginRight: '0.5em'}}>
+                {tag.name}
+              </span>
+            ))
+          ) : null}
+        </div>
 
         <div className="buttons mt-4">
           <button
