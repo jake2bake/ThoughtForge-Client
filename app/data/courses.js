@@ -16,3 +16,22 @@ export function getCourseById(id) {
     }
   })
 }
+
+export function getCourseEnrollments() {
+  return fetchWithResponse(`courseEnrollments`,{
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
+
+export function addEnrollment(enrollment) {
+  return fetchWithResponse(`courseEnrollments`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(enrollment)
+  })
+}

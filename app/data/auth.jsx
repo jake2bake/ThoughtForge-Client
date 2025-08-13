@@ -33,3 +33,12 @@ export function getUserProfile() {
     },
   });
 }
+
+export function getUsers() {
+  return fetchWithResponse("users", {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
