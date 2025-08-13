@@ -1,7 +1,13 @@
 "use client"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getCourseById } from "@/app/data/courses"
+import { getCourseById, addEnrollment} from "@/app/data/courses"
+import { getUserProfile } from "@/app/data/auth"
+
+interface User {
+  id: number
+  username: string
+}
 
 interface Mentor {
   id: number
@@ -30,6 +36,13 @@ export default function CourseDetailPage() {
   const [error, setError] = useState("")
   const [enrolling, setEnrolling] = useState(false)
   const [enrollSuccess, setEnrollSuccess] = useState(false)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    getUserProfile().then((data) => {
+      setCurrentUser(data)
+    })
+  }, [])
 
   useEffect(() => {
     if (!id) return
@@ -44,10 +57,14 @@ export default function CourseDetailPage() {
   }, [id])
 
   const handleEnroll = async () => {
+    if (!currentUser || !course ) return;
     setEnrolling(true)
     try {
-      // Your enroll API call here (mocked delay)
-      await new Promise((r) => setTimeout(r, 1000))
+      await addEnrollment({
+        user: currentUser.id,
+        course: course.id,
+      })
+      
       setEnrollSuccess(true)
       setError("")
     } catch {
