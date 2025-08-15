@@ -28,7 +28,7 @@ interface EntryFormProps {
     title: string;
     reflection: string;
     isPrivate: boolean;
-    topic: number;
+    topic_id: number;
     tag_ids: number[]
   }) => Promise<void>;
   submitLabel?: string;
@@ -69,12 +69,20 @@ export default function EntryForm({
       return;
     }
 
+    const selectedTopic = topics.find(t => t.id === topicId)
+    console.log(selectedTopic)
+
+    if (!selectedTopic) {
+      setError('Please select valid topic')
+      return
+    }
+
     try {
       await onSubmit({
         title,
         reflection,
         isPrivate,
-        topic: topicId,
+        topic_id: selectedTopic.id,
         tag_ids: selectedTagIds
       });
     } catch (err) {
@@ -119,8 +127,10 @@ export default function EntryForm({
             <label className="label">Topic</label>
             <div className="select">
               <select
-                value={topicId || ''}
-                onChange={(e) => setTopicId(parseInt(e.target.value))}
+                value={topicId ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value 
+                setTopicId(val ? parseInt(val) : null)}}
               >
                 <option value="" disabled>Select a topic</option>
                 {topics.map((topic) => (
