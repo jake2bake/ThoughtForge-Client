@@ -1,7 +1,7 @@
 import { fetchWithResponse } from "./fetcher"
 
 export function getShares() {
-    let url = 'likes'
+    let url = 'shares'
     return fetchWithResponse(url, {
         headers: {
             Authorization: `Token ${localStorage.getItem('token')}`
