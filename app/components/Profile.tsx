@@ -6,7 +6,7 @@ import { getCourses } from "../data/courses"
 import { getEntries } from "../data/entries"
 import { getShares } from "../data/shares"
 import { getLikes } from "../data/likes"
-import { createSecureServer } from "http2"
+
 
 
 
@@ -18,6 +18,18 @@ interface Share {
     entry: Entry  | null
     // reading: Reading | null
     course: Course | null
+    entry_details: {  
+        id: number;
+        title: string;
+        reflection: string;
+        created_at: string;
+        updated_at: string;
+    }
+    course_details: {
+        id: number;
+        title: string
+        description: string
+    }
 }
 
 interface User {
@@ -34,9 +46,17 @@ interface Course {
 }
 
 interface Like {
-    id: number
-    user: User 
-    entry: Entry
+    id: number;
+    user: number;  // Changed: user is just the ID
+    entry: number; // Changed: entry is just the ID
+    created_at: string;
+    entry_details: {  // Added: entry_details contains the full entry info
+        id: number;
+        title: string;
+        reflection: string;
+        created_at: string;
+        updated_at: string;
+    }
 }
 
 interface Entry {
@@ -53,27 +73,33 @@ export default function Profile() {
     const [currentUser, setCurrentUser] = useState<User >()
 
 
-    useEffect(() => {
-        const fetchAllData = async () => {
-            try {
-                const [userResponse, likesResponse, entriesResponse, coursesResponse, sharesResponse] = await Promise.all([
-                    getUserProfile(),
-                    getEntries(),
-                    getCourses(),
-                    getLikes(),
-                    getShares()
-                ]);
-                setCurrentUser(userResponse)
-                setCourses(coursesResponse)
-                setShares(sharesResponse)
-                setLikes(likesResponse)
-                setEntries(entriesResponse)
-            } catch (error) {
-                console.error("Error: ", error)
-            }
+   useEffect(() => {
+    const fetchAllData = async () => {
+        try {
+            const userResponse = await getUserProfile();
+            
+            const [likesResponse, entriesResponse, coursesResponse, sharesResponse] = await Promise.all([
+                getLikes(),
+                getEntries(),
+                getCourses(),
+                getShares()
+            ]);
+            
+            // Updated filter to compare with the numeric user ID
+            const userLikes = likesResponse.filter(like => like.user === userResponse.id);
+            const userShares = sharesResponse.filter(share => share.shared_to === userResponse.id)
+            setCurrentUser(userResponse);
+            setLikes(userLikes || []);
+            setEntries(entriesResponse || []);
+            setCourses(coursesResponse || []);
+            setShares(userShares || []);
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
-        fetchAllData()
-    }, [])
+    };
+    fetchAllData();
+}, []);
 
 
  return (
@@ -88,9 +114,9 @@ export default function Profile() {
               <button
                 key={like.id}
                 className="pixel-button is-fullwidth mb-2"
-                onClick={() => router.push(`/entries/${like.entry.id}`)}
+                onClick={() => router.push(`/entries/${like.entry}`)}
               >
-                {like.entry?.title}
+                {like.entry_details.title}
               </button>
             )) : <p className="pixel-text">No likes yet</p>}
           </div>
@@ -153,7 +179,7 @@ export default function Profile() {
                 className="pixel-button is-fullwidth mb-2"
                 onClick={() => router.push(`/entries/${share.entry?.id}`)}
               >
-                {share.entry?.title}
+                {share.entry_details?.title || share.course_details?.title}
               </button>
             )) : <p className="pixel-text">No shares yet</p>}
           </div>
