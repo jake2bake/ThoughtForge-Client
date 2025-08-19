@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { ReadingCard } from "../components/readingCard";
-import { getReadings } from "../data/readings";
+import { getReadings, getGutendexSearch } from "../data/readings";
 
 interface Topic {
   id: number;
@@ -52,19 +52,14 @@ export default function ReadingsList() {
     async function fetchGutendex() {
       setLoadingGutendex(true);
       try {
-        const res = await fetch(
-          `/gutendex/search/?q=${encodeURIComponent(searchTerm)}`
-        );
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        const data = await res.json();
-
+        const data = await getGutendexSearch(searchTerm)
+       
         const mappedBooks = data.results.map((book: any) => ({
           id: book.id,
           title: book.title,
           author: book.authors[0]?.name || "Unknown",
           topic: null,
+          gutenberg_id: book.id
         }));
 
         setGutendexBooks(mappedBooks);
@@ -100,28 +95,35 @@ export default function ReadingsList() {
     setSearchTerm(search.trim());
   };
 
-  if (loading) return <p>Loading backend readings...</p>;
+  if (loading) return <div className="loading-scroll">Loading backend readings...</div>;
 
   return (
-    <section className="section">
-      <h1 className="title">Readings</h1>
+    <section className="section bg-parchment">
+      <h1 className="title text-castle-dark mb-8">Readings</h1>
 
       {/* Search Form */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
+      <form onSubmit={handleSubmit} className="mb-8">
+        <div className="field has-addons">
+          <div className="control is-expanded">
         <input
+          className="input medieval-input"
           type="text"
-          placeholder="Search Gutendex books by title or author"
+          placeholder="Search ancient scrolls..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "0.5rem", width: "300px" }}
+          
         />
+        </div>
+        <div className="control">
         <button
           type="submit"
-          style={{ marginLeft: "0.5rem", padding: "0.5rem 1rem" }}
+          className="medieval-button"
         >
           Search
         </button>
-      </form>
+        </div>
+       </div>
+    </form>
 
       {/* Backend Readings */}
       <div className="columns is-multiline">
@@ -135,18 +137,19 @@ export default function ReadingsList() {
         <p>Loading Gutendex books...</p>
       ) : gutendexBooks.length > 0 ? (
         <>
-          <h2 className="title is-4">Gutendex Books</h2>
+          <h2 className="title is-4 text-castle-dark mt-8 mb-4">Discovered Scrolls</h2>
 
           {/* Author Filter Dropdown */}
-          <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="authorFilter" style={{ marginRight: "0.5rem" }}>
+          <div className="field mb-6">
+            <label htmlFor="authorFilter" className="label text-castle-dark">
               Filter by Author:
             </label>
+            <div className="control">
+              <div className="select is-medieval">
             <select
               id="authorFilter"
               value={selectedAuthor}
               onChange={(e) => setSelectedAuthor(e.target.value)}
-              style={{ padding: "0.3rem 0.5rem" }}
             >
               {authors.map((author) => (
                 <option key={author} value={author}>
@@ -154,6 +157,8 @@ export default function ReadingsList() {
                 </option>
               ))}
             </select>
+          </div>
+          </div>
           </div>
 
           <div className="columns is-multiline">
@@ -163,7 +168,7 @@ export default function ReadingsList() {
           </div>
         </>
       ) : searchTerm ? (
-        <p>No books found for "{searchTerm}".</p>
+        <p className="no-results">No books found for "{searchTerm}".</p>
       ) : null}
     </section>
   );
