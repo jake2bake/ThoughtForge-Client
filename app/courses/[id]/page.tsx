@@ -21,12 +21,19 @@ interface ReadingAssignment {
   content: string
 }
 
+interface Enrollment {
+  id: number
+  user: number
+  course: number
+}
+
 interface Course {
   id: number
   title: string
   description: string
   mentor: Mentor
   reading_assignments?: ReadingAssignment[]
+  enrollments?: Enrollment[]
 }
 
 export default function CourseDetailPage() {
@@ -37,6 +44,9 @@ export default function CourseDetailPage() {
   const [enrolling, setEnrolling] = useState(false)
   const [enrollSuccess, setEnrollSuccess] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [isEnrolled, setIsEnrolled] = useState(false)
+
+
 
   useEffect(() => {
     getUserProfile().then((data) => {
@@ -56,6 +66,16 @@ export default function CourseDetailPage() {
       .finally(() => setLoadingCourse(false))
   }, [id])
 
+  useEffect(() => {
+    if (course && currentUser) {
+      const userEnrolled = course.enrollments?.some(enrollment => enrollment.user === currentUser.id
+      )
+      setIsEnrolled(Boolean(userEnrolled))
+      if (userEnrolled)
+        setEnrollSuccess(true)
+    }
+  },[course, currentUser])
+
   const handleEnroll = async () => {
     if (!currentUser || !course ) return;
     setEnrolling(true)
@@ -66,6 +86,7 @@ export default function CourseDetailPage() {
       })
       
       setEnrollSuccess(true)
+      setIsEnrolled(true)
       setError("")
     } catch {
       setError("Enrollment failed. Please try again.")
@@ -103,9 +124,9 @@ export default function CourseDetailPage() {
           <button
             className={`button is-primary ${enrolling ? "is-loading" : ""}`}
             onClick={handleEnroll}
-            disabled={enrolling || enrollSuccess}
+            disabled={enrolling || isEnrolled}
           >
-            {enrollSuccess ? "Enrolled!" : "Enroll in Course"}
+            {isEnrolled?  "Enrolled!" : "Enroll in Course"}
           </button>
         </div>
       </div>

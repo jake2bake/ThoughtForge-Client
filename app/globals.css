@@ -14,8 +14,7 @@
   --stone-gray: #6c7b7f;
   --moss-green: #4a5d23;
 
-  
-  /* 8-bit styling variables */
+ 
   --pixel-border: 3px solid;
   --pixel-shadow: 4px 4px 0px;
 }
@@ -69,7 +68,7 @@ body {
   box-shadow: inset 0 -3px 0 var(--flame-orange);
 }
 
-/* Cards - Perfect for journal entries */
+
 .card {
   background: linear-gradient(145deg, var(--parchment) 0%, #ede0c8 100%);
   border: var(--pixel-border) var(--ink-black);
@@ -217,7 +216,7 @@ body {
   text-align: center;
 }
 
-/* Notifications */
+
 .notification {
   border-radius: 0 !important;
   border: 2px solid;
@@ -288,7 +287,7 @@ body {
   font-family: 'Courier Prime', monospace;
 }
 
-/* Pagination */
+
 .pagination-link, 
 .pagination-previous, 
 .pagination-next {
@@ -305,9 +304,9 @@ body {
   color: var(--ink-black);
 }
 
-/* ===== CUSTOM MEDIEVAL CLASSES ===== */
 
-/* Special decorative border */
+
+
 .medieval-border {
   border: 3px solid;
   border-image: repeating-linear-gradient(
@@ -391,7 +390,7 @@ body {
   }
 }
 
-/* Add these after your existing CSS */
+
 
 .pixel-box {
   border: 4px solid var(--castle-gold);
@@ -477,7 +476,7 @@ body {
   text-align: center;
 }
 
-/* Add these after your existing CSS */
+
 
 /* Reading Page Specific Styles */
 .manuscript-container {
