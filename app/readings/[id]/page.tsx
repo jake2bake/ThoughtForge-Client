@@ -1,8 +1,14 @@
 "use client";
-
+import { getUserProfile, getUsers } from "@/app/data/auth";
+import { addShare } from "@/app/data/shares";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getGutendex } from "@/app/data/readings"; // adjust the path as needed
+import { getGutendex, getGutendexText } from "@/app/data/readings"; // adjust the path as needed
+
+interface User {
+  id: number
+  username: string
+}
 
 interface Reading {
   id: number;
@@ -17,6 +23,50 @@ export default function ReadingDetailPage() {
   const { id } = useParams();
   const [reading, setReading] = useState<Reading | null>(null);
   const [textContent, setTextContent] = useState<string>("");
+  const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [users, setUsers] = useState<User[]>([])
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profile = await getUserProfile()
+        setCurrentUser(profile)
+      } catch (error) {
+        console.error("Error fetching user:", error)
+      }
+    }
+    fetchUser()
+  }, [])
+
+   const handleOpenShareModal = async () => {
+    try {
+      const allUsers = await getUsers();
+      setUsers(allUsers.filter(u => u.id !== currentUser?.id));
+      setShareModalOpen(true);
+    } catch (err) {
+      console.error("Error fetching users for share", err);
+    }
+  };
+
+  const handleConfirmShare = async () => {
+    if (!selectedUserId || !currentUser || !reading) return;
+    try {
+      await addShare({
+        user: currentUser.id,
+        entry: null,
+        shared_to: selectedUserId,
+        reading: reading.id,
+        course: null,
+      });
+      setShareModalOpen(false);
+      setSelectedUserId(null);
+    } catch (err) {
+      console.error("Error sharing reading", err);
+    }
+  };
+
 
   useEffect(() => {
     const fetchReading = async () => {
@@ -31,9 +81,8 @@ export default function ReadingDetailPage() {
           formats["text/plain"];
 
         if (textUrl) {
-          // const textRes = await fetch(textUrl);
-          // const bookText = await textRes.text();
-          // setTextContent(bookText);
+          const bookText = await getGutendexText(textUrl);
+          setTextContent(bookText);
         } else {
           setTextContent("No plain text version available.");
         }
@@ -46,61 +95,103 @@ export default function ReadingDetailPage() {
     fetchReading();
   }, [id]);
 
+  
   if (!reading) {
     return (
-      <div className="bg-amber-50 min-h-screen p-8">
-        <div className="bg-amber-900 text-amber-100 p-4 border-4 border-amber-800 shadow-lg">
-          <p className="font-mono text-lg">Loading ancient texts...</p>
+      <div className="bg-parchment min-h-screen p-8">
+        <div className="medieval-scroll p-6">
+          <p className="text-xl">📜 Unrolling the ancient scroll...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-amber-50 min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-amber-900 text-amber-100 p-6 border-4 border-amber-800 shadow-lg mb-6">
-          <h1 className="text-3xl font-bold font-mono mb-2 text-center border-b-2 border-amber-700 pb-2">
-            {reading.title}
-          </h1>
-          <h2 className="text-xl font-mono text-center text-amber-200">
-            ⚔️ By {reading.authors.map((a) => a.name).join(", ")} ⚔️
-          </h2>
+  <div className="min-h-screen p-8" style ={{ background: 'var(--parchment)'}}>
+    <div className="max-w-4xl mx-auto manuscript-container">
+      {/* Title Scroll */}
+      <div className="manuscript-title">
+        <h1 className="text-3xl font-bold mb-4">
+          {reading.title}
+        </h1>
+        <h2 className="text-xl">
+          <span className="mx-2">⚔️</span>
+          By {reading.authors.map((a) => a.name).join(", ")}
+          <span className="mx-2">⚔️</span>
+        </h2>
+      </div>
+
+      {/* Metadata Panel */}
+      <div className="reading-metadata">
+        <div className="metadata-item">
+          <span className="metadata-label">📜 Subjects:</span>
+          <span className="metadata-value">{reading.subjects.join(", ")}</span>
         </div>
-
-        <div className="bg-amber-100 border-4 border-amber-800 p-4 mb-6 shadow-lg">
-          <div className="mb-4">
-            <span className="font-bold font-mono text-amber-900">📜 Subjects:</span>
-            <span className="font-mono text-amber-800 ml-2">{reading.subjects.join(", ")}</span>
-          </div>
-
-          <div className="mb-4">
-            <span className="font-bold font-mono text-amber-900">🏰 Bookshelves:</span>
-            <span className="font-mono text-amber-800 ml-2">{reading.bookshelves.join(", ")}</span>
-          </div>
-        </div>
-
-        <div className="bg-amber-100 border-4 border-amber-800 shadow-lg">
-          <div className="bg-amber-900 text-amber-100 p-2 border-b-2 border-amber-800">
-            <h3 className="font-mono font-bold text-center">📖 Ancient Manuscript 📖</h3>
-          </div>
-
-          <div
-            className="bg-amber-50 p-4 border-2 border-amber-700 m-2"
-            style={{
-              maxHeight: "500px",
-              overflowY: "scroll",
-              whiteSpace: "pre-wrap",
-              fontFamily: "monospace",
-              fontSize: "0.9rem",
-              lineHeight: 1.6,
-              color: "#451a03",
-            }}
-          >
-            {textContent}
-          </div>
+         <div className="metadata-item">
+          <div className="metadata-label">🏰 Bookshelves:</div>
+          <div className="metadata-value">{reading.bookshelves.join(", ")}</div>
         </div>
       </div>
+
+      {/* Share Button */}
+      <div className="mb-8 text-center">
+        <button 
+          onClick={handleOpenShareModal} 
+          className="medieval-button"
+        >
+          📜 Share This Reading
+        </button>
+      </div>
+
+      {/* Manuscript Content */}
+      <div className="medieval-manuscript">
+        <div className="manuscript-header">
+          <h3 className="text-center font-bold text-parchment">📖 Ancient Manuscript 📖</h3>
+        </div>
+        <div className="manuscript-content">
+          {textContent}
+        </div>
+      </div>
+
+      {/* Share Modal */}
+      {shareModalOpen && (
+        <div className="medieval-modal">
+          <div className="medieval-modal-overlay" onClick={() => setShareModalOpen(false)} />
+          <div className="medieval-modal-content">
+            <h3 className="medieval-modal-title">📜 Share Reading</h3>
+            <div className="medieval-select-wrapper">
+              <select
+                value={selectedUserId ?? ""}
+                onChange={(e) => setSelectedUserId(Number(e.target.value))}
+                className="medieval-select"
+              >
+                <option value="">-- Choose a Scholar --</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="medieval-modal-actions">
+              <button
+                onClick={handleConfirmShare}
+                disabled={!selectedUserId}
+                className="medieval-button"
+              >
+                Share Scroll
+              </button>
+              <button
+                onClick={() => setShareModalOpen(false)}
+                className="medieval-button is-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);;
 }

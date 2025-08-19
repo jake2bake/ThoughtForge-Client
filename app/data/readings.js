@@ -18,3 +18,26 @@ export function getGutendex(id) {
   })
 }
 
+export function getGutendexText(textUrl) {
+  const encodedUrl = encodeURIComponent(textUrl)
+  
+  return fetchWithResponse(`gutendex/text/?url=${encodedUrl}`,
+    {
+      headers: {
+        Authorization: `Token ${localStorage.getItem('token')}`
+      }
+    }
+  )
+}
+
+// ...existing code...
+
+export function getGutendexSearch(searchQuery) {
+  const encodedQuery = encodeURIComponent(searchQuery)
+  return fetchWithResponse(`gutendex/books/search/?q=${encodedQuery}`, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
+
