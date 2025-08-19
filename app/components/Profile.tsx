@@ -8,7 +8,11 @@ import { getShares } from "../data/shares"
 import { getLikes } from "../data/likes"
 
 
-
+interface Reading {
+  id: number
+  title: string
+  author: string
+}
 
 
 interface Share {
@@ -16,7 +20,7 @@ interface Share {
     user: User
     shared_to: number
     entry: Entry  | null
-    // reading: Reading | null
+    reading: Reading | null
     course: Course | null
     entry_details: {  
         id: number;
@@ -29,6 +33,12 @@ interface Share {
         id: number;
         title: string
         description: string
+    }
+    reading_details: {
+        id: number
+        title: string
+        author: string
+
     }
 }
 
@@ -47,10 +57,10 @@ interface Course {
 
 interface Like {
     id: number;
-    user: number;  // Changed: user is just the ID
-    entry: number; // Changed: entry is just the ID
+    user: number;  
+    entry: number; 
     created_at: string;
-    entry_details: {  // Added: entry_details contains the full entry info
+    entry_details: {  
         id: number;
         title: string;
         reflection: string;
@@ -169,22 +179,49 @@ export default function Profile() {
       </div>
 
       {/* Shares - Bottom Left */}
-      <div className="column is-one-quarter">
-        <div className="pixel-box">
-          <h2 className="pixel-title">🛡 Shared With Me</h2>
-          <div className="pixel-content">
-            {shares.length > 0 ? shares.map(share => (
-              <button
-                key={share.id}
-                className="pixel-button is-fullwidth mb-2"
-                onClick={() => router.push(`/entries/${share.entry?.id}`)}
-              >
-                {share.entry_details?.title || share.course_details?.title}
-              </button>
-            )) : <p className="pixel-text">No shares yet</p>}
-          </div>
-        </div>
-      </div>
+<div className="column is-one-quarter">
+  <div className="pixel-box">
+    <h2 className="pixel-title">🛡 Shared With Me</h2>
+    <div className="pixel-content">
+      {shares.length > 0 ? shares.map(share => {
+        if (share.entry && share.entry_details) {
+          return (
+            <button
+              key={share.id}
+              className="pixel-button is-fullwidth mb-2"
+              onClick={() => router.push(`/entries/${share.entry?.id}`)}
+            >
+              📝 {share.entry_details.title}
+            </button>
+          )
+        }
+        if (share.course && share.course_details) {
+          return (
+            <button
+              key={share.id}
+              className="pixel-button is-fullwidth mb-2"
+              onClick={() => router.push(`/courses/${share.course?.id}`)}
+            >
+              📚 {share.course_details.title}
+            </button>
+          )
+        }
+        if (share.reading && share.reading_details) {
+          return (
+            <button
+              key={share.id}
+              className="pixel-button is-fullwidth mb-2"
+              onClick={() => router.push(`/readings/${share.reading?.id}`)}
+            >
+              📖 {share.reading_details.title}
+            </button>
+          )
+        }
+        return null;
+      }).filter(Boolean) : <p className="pixel-text">No shares yet</p>}
+    </div>
+  </div>
+</div>
 
       {/* Update Profile Button - Bottom Right */}
       <div className="column is-one-quarter is-offset-half">
