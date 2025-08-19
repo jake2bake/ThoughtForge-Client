@@ -2,11 +2,18 @@
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { getUserProfile } from "../data/auth"
-import { getCourses } from "../data/courses"
+import { getCourseEnrollments, getCourses } from "../data/courses"
 import { getEntries } from "../data/entries"
 import { getShares } from "../data/shares"
 import { getLikes } from "../data/likes"
 
+
+interface CourseEnrollment {
+    id: number
+    enrolled_at: string
+    user: number
+    course: number
+}
 
 interface Reading {
   id: number
@@ -88,20 +95,29 @@ export default function Profile() {
         try {
             const userResponse = await getUserProfile();
             
-            const [likesResponse, entriesResponse, coursesResponse, sharesResponse] = await Promise.all([
+            const [likesResponse, entriesResponse, coursesResponse, sharesResponse, enrollmentsResponse] = await Promise.all([
                 getLikes(),
                 getEntries(),
                 getCourses(),
-                getShares()
+                getShares(),
+                getCourseEnrollments()
             ]);
             
             // Updated filter to compare with the numeric user ID
-            const userLikes = likesResponse.filter(like => like.user === userResponse.id);
-            const userShares = sharesResponse.filter(share => share.shared_to === userResponse.id)
+            const userEnrollments = enrollmentsResponse.filter(
+              enrollment => enrollment.user === userResponse.id)
+            const enrolledCourseIds = userEnrollments.map(
+              enrollment => enrollment.course)
+            const userLikes = likesResponse.filter(
+              like => like.user === userResponse.id);
+            const userShares = sharesResponse.filter(
+              share => share.shared_to === userResponse.id)
+            const userCourses = coursesResponse.filter(
+              course => enrolledCourseIds.includes(course.id))
             setCurrentUser(userResponse);
             setLikes(userLikes || []);
             setEntries(entriesResponse || []);
-            setCourses(coursesResponse || []);
+            setCourses(userCourses || []);
             setShares(userShares || []);
 
         } catch (error) {

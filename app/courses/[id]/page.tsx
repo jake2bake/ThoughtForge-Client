@@ -1,7 +1,7 @@
 "use client"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getCourseById, addEnrollment} from "@/app/data/courses"
+import { getCourseById, addEnrollment, getCourseEnrollments} from "@/app/data/courses"
 import { getUserProfile } from "@/app/data/auth"
 
 interface User {
@@ -33,7 +33,7 @@ interface Course {
   description: string
   mentor: Mentor
   reading_assignments?: ReadingAssignment[]
-  enrollments?: Enrollment[]
+  enrollments: Enrollment[]
 }
 
 export default function CourseDetailPage() {
@@ -47,34 +47,44 @@ export default function CourseDetailPage() {
   const [isEnrolled, setIsEnrolled] = useState(false)
 
 
+useEffect(() => {
+  const fetchCourseAndEnrollment = async () => {
+    if (!id) return;
+    setLoadingCourse(true);
+    try {
+      // Get both user and enrollments data
+      const [userData, courseData, enrollmentsData] = await Promise.all([
+        getUserProfile(),
+        getCourseById(id),
+        getCourseEnrollments()
+      ]);
 
-  useEffect(() => {
-    getUserProfile().then((data) => {
-      setCurrentUser(data)
-    })
-  }, [])
+      // Check if user is enrolled in this specific course
+      const isUserEnrolled = enrollmentsData.some(
+        enrollment => enrollment.user === userData.id && enrollment.course === Number(id)
+      );
 
-  useEffect(() => {
-    if (!id) return
-    setLoadingCourse(true)
-    getCourseById(id)
-      .then((data) => {
-        setCourse(data)
-        setError("")
-      })
-      .catch(() => setError("Failed to load course details."))
-      .finally(() => setLoadingCourse(false))
-  }, [id])
-
-  useEffect(() => {
-    if (course && currentUser) {
-      const userEnrolled = course.enrollments?.some(enrollment => enrollment.user === currentUser.id
-      )
-      setIsEnrolled(Boolean(userEnrolled))
-      if (userEnrolled)
-        setEnrollSuccess(true)
+      // Update all states
+      setCurrentUser(userData);
+      setCourse(courseData);
+      setIsEnrolled(isUserEnrolled);
+      setEnrollSuccess(isUserEnrolled);
+      
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to load course details.");
+    } finally {
+      setLoadingCourse(false);
     }
-  },[course, currentUser])
+  };
+
+  fetchCourseAndEnrollment();
+}, [id]);
+ 
+
+ 
+      
+ 
 
   const handleEnroll = async () => {
     if (!currentUser || !course ) return;
