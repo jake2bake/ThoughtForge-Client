@@ -103,7 +103,7 @@ export default function Profile() {
                 getCourseEnrollments()
             ]);
             
-            // Updated filter to compare with the numeric user ID
+            
             const userEnrollments = enrollmentsResponse.filter(
               enrollment => enrollment.user === userResponse.id)
             const enrolledCourseIds = userEnrollments.map(
