@@ -87,7 +87,7 @@ export default function EntriesList() {
     setShareModalOpen(true)
     try {
       const allUsers = await getUsers()
-      setUsers(allUsers.filter(u => u.iid !== currentUser?.id))
+      setUsers(allUsers.filter(u => u.id !== currentUser?.id))
     } catch (err) {
       console.error("Error fetching users for share", err)
     }

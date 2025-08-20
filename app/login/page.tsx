@@ -21,7 +21,7 @@ export default function LoginPage() {
 
       if (response.token) {
         localStorage.setItem("token", response.token);
-        router.push("/entries");  // Redirect after login
+        router.push("/entries");  
       } else {
         setError("Invalid credentials. Please try again.");
       }
