@@ -11,7 +11,7 @@ export function getReadings() {
 }
 
 export function getGutendex(id) {
-  return fetchWithResponse(`gutendex/books/${id}`, {
+  return fetchWithResponse(`gutendex/books/${id}/`, {
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`
     }
@@ -34,7 +34,7 @@ export function getGutendexText(textUrl) {
 
 export function getGutendexSearch(searchQuery) {
   const encodedQuery = encodeURIComponent(searchQuery)
-  return fetchWithResponse(`gutendex/books/search/?q=${encodedQuery}`, {
+  return fetchWithResponse(`gutendex/books?q=${encodedQuery}`, {
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`
     }

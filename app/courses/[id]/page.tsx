@@ -1,5 +1,6 @@
 "use client"
-import { useParams } from "next/navigation"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { getCourseById, addEnrollment, getCourseEnrollments} from "@/app/data/courses"
 import { getUserProfile } from "@/app/data/auth"
@@ -37,6 +38,7 @@ interface Course {
 }
 
 export default function CourseDetailPage() {
+  const router = useRouter()
   const { id } = useParams()
   const [course, setCourse] = useState<Course | null>(null)
   const [loadingCourse, setLoadingCourse] = useState(true)
@@ -105,6 +107,8 @@ useEffect(() => {
     }
   }
 
+  
+
   if (loadingCourse) {
     return <section className="section parchment-bg p-6">Loading course...</section>
   }
@@ -155,18 +159,35 @@ useEffect(() => {
                 <th>Title</th>
                 <th>Due Date</th>
                 <th>Content</th>
-              </tr>
-            </thead>
-            <tbody>
-              {course.reading_assignments.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.title}</td>
-                  <td>{r.due_date}</td>
-                  <td>{r.content}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {course.reading_assignments.map((r) => (
+      <tr key={r.id}>
+        <td>{r.title}</td>
+        <td>{r.due_date}</td>
+        <td>{r.content}</td>
+        <td>
+          {isEnrolled && (
+            <Link 
+              href={`/submissions/new?readingId=${r.id}&courseId=${course.id}`}
+              className="button is-small"
+              style={{
+                background: 'var(--castle-gold)',
+                color: 'var(--castle-dark)',
+                border: '1px solid var(--castle-dark)',
+                fontFamily: 'Cinzel, serif'
+              }}
+            >
+              📝 Begin Assignment
+            </Link>
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
         )}
       </section>
     </section>

@@ -52,7 +52,9 @@ export default function ReadingsList() {
     async function fetchGutendex() {
       setLoadingGutendex(true);
       try {
+        console.log('Searching for:', searchTerm)
         const data = await getGutendexSearch(searchTerm)
+        console.log('Gutendex response:', data)
        
         const mappedBooks = data.results.map((book: any) => ({
           id: book.id,
@@ -61,7 +63,7 @@ export default function ReadingsList() {
           topic: null,
           gutenberg_id: book.id
         }));
-
+        console.log('Mapped books:', mappedBooks)
         setGutendexBooks(mappedBooks);
         setSelectedAuthor("All");
       } catch (err) {

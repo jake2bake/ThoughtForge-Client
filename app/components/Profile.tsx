@@ -130,8 +130,9 @@ export default function Profile() {
 
  return (
   <div className="pixel-container p-5">
-    <div className="columns is-multiline">
-      {/* Likes - Top Left */}
+    {/* Top Row */}
+    <div className="columns mb-6">
+      {/* Likes */}
       <div className="column is-one-quarter">
         <div className="pixel-box">
           <h2 className="pixel-title">❤️ Likes</h2>
@@ -149,7 +150,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Profile Info - Center */}
+      {/* Profile Info */}
       <div className="column is-half">
         <div className="pixel-box">
           <h1 className="pixel-title">🏰 Profile</h1>
@@ -176,7 +177,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Courses - Top Right */}
+      {/* Courses */}
       <div className="column is-one-quarter">
         <div className="pixel-box">
           <h2 className="pixel-title">📜 Courses</h2>
@@ -193,54 +194,72 @@ export default function Profile() {
           </div>
         </div>
       </div>
-
-      {/* Shares - Bottom Left */}
-<div className="column is-one-quarter">
-  <div className="pixel-box">
-    <h2 className="pixel-title">🛡 Shared With Me</h2>
-    <div className="pixel-content">
-      {shares.length > 0 ? shares.map(share => {
-        if (share.entry && share.entry_details) {
-          return (
-            <button
-              key={share.id}
-              className="pixel-button is-fullwidth mb-2"
-              onClick={() => router.push(`/entries/${share.entry?.id}`)}
-            >
-              📝 {share.entry_details.title}
-            </button>
-          )
-        }
-        if (share.course && share.course_details) {
-          return (
-            <button
-              key={share.id}
-              className="pixel-button is-fullwidth mb-2"
-              onClick={() => router.push(`/courses/${share.course?.id}`)}
-            >
-              📚 {share.course_details.title}
-            </button>
-          )
-        }
-        if (share.reading && share.reading_details) {
-          return (
-            <button
-              key={share.id}
-              className="pixel-button is-fullwidth mb-2"
-              onClick={() => router.push(`/readings/${share.reading?.id}`)}
-            >
-              📖 {share.reading_details.title}
-            </button>
-          )
-        }
-        return null;
-      }).filter(Boolean) : <p className="pixel-text">No shares yet</p>}
     </div>
-  </div>
-</div>
 
-      {/* Update Profile Button - Bottom Right */}
-      <div className="column is-one-quarter is-offset-half">
+    {/* Bottom Row */}
+    <div className="columns">
+      {/* Shares */}
+      <div className="column is-one-quarter">
+        <div className="pixel-box">
+          <h2 className="pixel-title">🛡 Shared With Me</h2>
+          <div className="pixel-content">
+            {shares.length > 0 ? shares.map(share => {
+              if (share.entry && share.entry_details) {
+                return (
+                  <button
+                    key={share.id}
+                    className="pixel-button is-fullwidth mb-2"
+                    onClick={() => router.push(`/entries/${share.entry?.id}`)}
+                  >
+                    📝 {share.entry_details.title}
+                  </button>
+                )
+              }
+              if (share.course && share.course_details) {
+                return (
+                  <button
+                    key={share.id}
+                    className="pixel-button is-fullwidth mb-2"
+                    onClick={() => router.push(`/courses/${share.course?.id}`)}
+                  >
+                    📚 {share.course_details.title}
+                  </button>
+                )
+              }
+              if (share.reading && share.reading_details) {
+                return (
+                  <button
+                    key={share.id}
+                    className="pixel-button is-fullwidth mb-2"
+                    onClick={() => router.push(`/readings/${share.reading?.id}`)}
+                  >
+                    📖 {share.reading_details.title}
+                  </button>
+                )
+              }
+              return null;
+            }).filter(Boolean) : <p className="pixel-text">No shares yet</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Submissions */}
+      <div className="column is-half">
+        <div className="pixel-box">
+          <h2 className="pixel-title">📝 My Submissions</h2>
+          <div className="pixel-content">
+            <button
+              className="pixel-button is-fullwidth"
+              onClick={() => router.push('/submissions')}
+            >
+              View All Submissions
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Update Profile */}
+      <div className="column is-one-quarter">
         <div className="pixel-box">
           <button
             className="pixel-button is-large is-fullwidth"
