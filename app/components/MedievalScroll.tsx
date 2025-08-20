@@ -26,7 +26,7 @@ interface Entry {
   tags: Tag
 }
 
-// Updated component props to include currentUser
+
 export default function MedievalScroll({ 
   entry, 
   onEdit, 
@@ -36,7 +36,7 @@ export default function MedievalScroll({
   entry: Entry; 
   onEdit: () => void; 
   onDelete: () => void;
-  currentUser: User | null; // Add currentUser prop
+  currentUser: User | null; 
 }) {
   const [isUnfurling, setIsUnfurling] = useState(true);
   const [showContent, setShowContent] = useState(false);
@@ -44,10 +44,10 @@ export default function MedievalScroll({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  // Check if current user is the author of the entry
+  
   const isAuthor = currentUser && entry.user && currentUser.id === entry.user.id;
 
-  // Format the date in medieval style
+ 
   const formatMedievalDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -84,7 +84,7 @@ export default function MedievalScroll({
   setShowDeleteConfirm(false);
 };
 
-  // Unfurling animation sequence
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsUnfurling(false);
@@ -94,7 +94,7 @@ export default function MedievalScroll({
     return () => clearTimeout(timer);
   }, []);
 
-  // Typewriter effect for content
+ 
   useEffect(() => {
     if (showContent && currentIndex < entry.reflection.length) {
       const timer = setTimeout(() => {
@@ -111,7 +111,7 @@ export default function MedievalScroll({
   return (
     <>
       <div className="scroll-container">
-        {/* Action Buttons - Only show if user is the author */}
+        
         {isAuthor && (
           <div className="medieval-actions">
             <button 
@@ -133,7 +133,7 @@ export default function MedievalScroll({
           </div>
         )}
 
-{/* Delete Confirmation Modal */}
+
 {showDeleteConfirm && (
   <div className="modal-overlay">
     <div className="delete-confirmation">
@@ -195,7 +195,7 @@ export default function MedievalScroll({
               ⚜️═══════════════════════════════════════════════════════════════════⚜️
             </div>
 
-            {/* Entry Header */}
+            
             <div className="entry-header">
               <h1 className="illuminated-title">
                 <span className="drop-cap">{entry.title.charAt(0)}</span>
@@ -573,11 +573,13 @@ export default function MedievalScroll({
         }
 
         .drop-cap {
-          float: left;
+          display: inline-flex;  
+          align-items: center;
+          justify-content: center;
           font-size: 4rem;
-          line-height: 3rem;
-          padding: 0 8px 0 0;
-          margin: 0 8px 0 0;
+          line-height: 1;        
+          padding: 0.2rem;       
+          margin: 0 0.5rem 0 0;  
           color: #8b0000;
           background: linear-gradient(135deg, #d4a574 0%, #b8956a 100%);
           -webkit-background-clip: text;
@@ -586,13 +588,11 @@ export default function MedievalScroll({
           text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
           border: 2px solid #8b7355;
           border-radius: 8px;
-          text-align: center;
           width: 60px;
           height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: rgba(212, 165, 116, 0.1);
+          vertical-align: middle;  
+          position: relative;      
+          top: -0.2rem;           
         }
 
         .entry-meta {
