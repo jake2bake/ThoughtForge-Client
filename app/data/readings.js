@@ -30,11 +30,17 @@ export function getGutendexText(textUrl) {
   )
 }
 
-// ...existing code...
+
 
 export function getGutendexSearch(searchQuery) {
   const encodedQuery = encodeURIComponent(searchQuery)
-  return fetchWithResponse(`gutendex/books?q=${encodedQuery}`, {
+  console.log('Search query:', searchQuery)
+  console.log('Encoded query:', encodedQuery)
+  
+  const url = `gutendex/books?q=${encodedQuery}`
+  console.log('Full URL:', url)
+  
+  return fetchWithResponse(url, {
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`
     }
