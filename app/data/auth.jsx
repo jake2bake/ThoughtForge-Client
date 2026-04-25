@@ -42,3 +42,18 @@ export function getUsers() {
     }
   })
 }
+
+
+
+// ...existing functions...
+
+export function updateUserProfile(profileData) {
+  return fetchWithResponse('profile/', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify(profileData)
+  })
+}

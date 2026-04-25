@@ -12,3 +12,15 @@ export function getUserProfile() {
     },
   });
 }
+
+// Add this function to your auth.js file
+// export function updateUserProfile(profileData) {
+//   return fetchWithResponse('auth/user/', {
+//     method: 'PATCH',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Token ${localStorage.getItem('token')}`
+//     },
+//     body: JSON.stringify(profileData)
+//   })
+// }
