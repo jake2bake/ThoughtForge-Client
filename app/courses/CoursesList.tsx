@@ -26,6 +26,7 @@ export default function CoursesList() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [checkingUser, setCheckingUser] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
   async function fetchCourses() {
