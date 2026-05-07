@@ -3,11 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { CourseCard } from "../components/CourseCard";
 import { getCourses } from "../data/courses";
+import { getUserProfile } from "../data/auth";
+import { useRouter } from "next/navigation";
 
 
 interface User {
   id: number;
   username: string;
+  role?: string | null;
 }
 
 
@@ -21,6 +24,8 @@ interface Course {
 export default function CoursesList() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [checkingUser, setCheckingUser] = useState(true)
 
   useEffect(() => {
   async function fetchCourses() {
@@ -37,6 +42,22 @@ export default function CoursesList() {
   fetchCourses();
 }, []);
 
+  useEffect(() => {
+    let mounted = true;
+    async function fetchprofile() {
+      try {
+        const user = await getUserProfile()
+        if (mounted) setCurrentUser(user)
+      } catch (err) {
+        console.error("Error fetching profile", err)
+      } finally {
+        if (mounted) setCheckingUser(false)
+      }
+    }
+    fetchprofile()
+    return () => { mounted = false }
+  }, [])
+
 
   if (loading) return <p>Loading entries...</p>;
 
@@ -44,7 +65,26 @@ export default function CoursesList() {
 
   return (
     <section className="section">
-      <h1 className="title">Courses</h1>
+      <div className="level mb-4">
+        <div className="level-left">
+          <h1 className="title">Courses</h1>
+        </div>
+
+        <div className="level-right">
+          {/* Show Create Course only for mentors */}
+          {!checkingUser && currentUser?.role === "mentor" && (
+            <div className="level-item">
+              <button
+                className="button is-primary"
+                onClick={() => router.push("/courses/new")}
+              >
+                Create Course
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="columns is-multiline">
         {courses.map((course) => (
           <CourseCard key={course.id} course={course} />
