@@ -35,3 +35,14 @@ export function addEnrollment(enrollment) {
     body: JSON.stringify(enrollment)
   })
 }
+
+export function createCourse(course) {
+  return fetchWithResponse(`courses`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(course)
+  })
+}
