@@ -26,6 +26,7 @@ export default function CourseForm({ initial = {}, onCreated, redirectAfterCreat
   const router = useRouter();
   const [title, setTitle] = useState(initial.title || "");
   const [description, setDescription] = useState(initial.description || "");
+  const [reading, setReading] = useState("")
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,6 +108,20 @@ export default function CourseForm({ initial = {}, onCreated, redirectAfterCreat
             rows={6}
           />
         </div>
+      </div>
+      <div className="field">
+        <label className="label">Assign Reading</label>
+        <div className="control">
+          <input
+            className="input"
+            type="text"
+            placeholder="Enter reading title or ID"
+            value={reading}
+            onChange={(e) => setReading(e.target.value)}
+            disabled={saving}
+          />
+        </div>
+        <p className="help">Optional: Assign a reading to this course</p>
       </div>
 
       {error && (
